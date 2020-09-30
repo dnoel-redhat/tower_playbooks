@@ -1,0 +1,28 @@
+users_info:
+  - username: "sam"
+    password: "redhat123"
+    email: "sam@lab.example.com"
+    first_name: "Sam" 
+    last_name: "Simons"
+    state: present
+    superuser: no 
+    auditor: no
+
+  - username: "sylvia"
+    password: "redhat123"
+    email: "sylvia@lab.example.com"
+    first_name: "Sylvia"
+    last_name: "Simons"
+    state: present
+    auditor: true
+    superuser: no 
+
+  - username: "simon"
+    password: "redhat123"
+    email: "simon@lab.example.com"
+    first_name: "Simon"
+    last_name: "Stephens"
+    state: present
+    superuser: true
+    auditor: no
+

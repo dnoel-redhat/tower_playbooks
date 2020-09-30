@@ -1,0 +1,55 @@
+- name: Tower Team Users Role Playbook
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+  - vars_users.yml
+
+  tasks:
+  - name: Run Lab script
+    import_tasks: lab_script.yml
+
+  - name: Create teams in tower
+    tower_team:
+      name: "Developers"
+      description: "Dev Team"
+      organization: "Default"
+      state: "present"
+      tower_config_file: "{{ tower_credential_file }}"
+
+  - name: Add Team via command Line
+    shell: >
+            tower-cli team create
+            --name "Developers" --organization "Default" --description "Dev Team"
+            --tower-host "tower.lab.example.com" --tower-username "admin"
+            --tower-password "redhat" --insecure
+            
+
+  - name: Create user via tower_user module
+    tower_user:
+      username: "{{ item.username }}"
+      password: "{{ item.password }}"
+      email: "{{ item.email }}"
+      first_name: "{{ item.first_name }}"
+      last_name: "{{ item.last_name }}"
+      state: "{{ item.state  }}"
+      tower_config_file: "{{ tower_credential_file }}"
+    loop: "{{ users_info }}"
+
+   
+
+  - name: Add users to appropriate team via tower_role
+    tower_role:
+      user: "{{ item.name }}"
+      target_team: "{{ item.team }}"
+      role: "{{ item.role }}"
+      state: "{{ item.state }}"
+      tower_config_file: "{{ tower_credential_file }}"
+    loop: "{{ users_team_association_info }}"
+
+
+  - name: Assign user role via tower_cli command
+    shell: > 
+            tower-cli role grant --user 'david' 
+            --target-team 'Developers' --type 'member'
+            --tower-host "tower.lab.example.com" --tower-username "admin" 
+            --tower-password "redhat" --insecure

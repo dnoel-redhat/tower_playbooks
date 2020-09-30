@@ -1,0 +1,94 @@
+- name: Installing Red Hat Ansible Tower
+  hosts: localhost
+  tasks:
+  - name: Run lab script
+    shell: lab tower-install start
+    async: 1
+    poll: 0
+    #become: true
+    ignore_errors: true
+    register: lab_script_output
+
+  - name: testing
+    debug:
+      var: lab_script_output
+
+  - name: Wait for lab script to complete
+    async_status: "jid={{lab_script_output.ansible_job_id}}"
+    retries: 2000
+    register: check
+    until: check.finished
+  - name: print check
+    debug:
+      var: check
+  - name: Download Ansible Tower setup
+    get_url:
+      url: http://content.example.com/ansible2.8/x86_64/dvd/setup-bundle/ansible-tower-setup-bundle-latest.el8.tar.gz
+      dest: /root
+      mode: 644
+    async: 1
+    poll: 0
+    become: true
+    delegate_to: tower.lab.example.com
+    register: download_setup
+  
+  - name: print download_setup
+    debug:
+      var: download_setup
+
+  - name: Wait for Download setup to complete
+    async_status: "jid={{download_setup.ansible_job_id}}"
+    retries: 2000
+    register: download_check
+    ignore_errors: true
+    until: download_check.finished
+
+  - name: print check
+    debug:
+      var: download_check
+
+  - name: Unarchive Tower setup file
+    unarchive:
+      src: /root/ansible-tower-setup-bundle-latest.el8.tar.gz
+      remote_src: true
+      dest: /root/
+    become: true
+    delegate_to: tower.lab.example.com
+  
+  - name: Update inventory file
+    lineinfile:
+      path: /root/ansible-tower-setup-bundle-3.5.0-1.el8/inventory
+      regexp: "^{{ item.original_line }}"
+      line: "{{ item.replaced_line }}"
+    loop:
+    - original_line: "admin_password"
+      replaced_line: "admin_password='redhat'"
+    - original_line: "pg_password"
+      replaced_line: "pg_password='redhat'"
+    - original_line: "rabbitmq_password"
+      replaced_line: "rabbitmq_password='redhat'"
+    become: true
+    delegate_to: tower.lab.example.com
+
+  - name: Start Installation
+    script: /root/ansible-tower-setup-bundle-3.5.0-1.el8/setup.sh 
+    args:
+      chdir: /root/ansible-tower-setup-bundle-3.5.0-1.el8/
+      executable: bash
+    delegate_to: tower.lab.example.com
+    become: true
+    register: install_output
+    #shell:  /root/ansible-tower-setup-bundle-3.5.0-1.el8/setup.sh
+    #async: 50000
+    #poll: 1000
+
+  - name: print install_out
+    debug:
+      var: install_output
+
+  - name: Wait for installation to complete
+    async_status: "jid={{ install_output.ansible_job_id }}"
+    retries: 2000
+    register: install_check
+    ignore_errors: true
+    until: install_check.finished

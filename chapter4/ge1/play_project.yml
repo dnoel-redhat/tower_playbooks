@@ -1,0 +1,48 @@
+- name: Tower Team Users Role Playbook
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+  - vars_users.yml
+
+  tasks:
+  - name: Run Lab script
+    import_tasks: lab_script.yml
+
+  - name: Create a valid Git SCM credential
+    tower_credential:
+      name: "student-git"
+      organization: "Default"
+      description: "Student Git Credential"
+      state: "present"
+      kind: "scm"
+      username: "git"
+      ssh_key_data: "{{ lookup('file', '/home/student/.ssh/lab_rsa') }}"
+      tower_config_file: "{{ tower_credential_file }}"
+
+  - name: Import Project from Git Repository
+    tower_project:
+      name: "My Webservers DEV"
+      description: "Development Webservers Project"
+      organization: "Default"
+      scm_type: "git"
+      scm_url: "ssh://git.lab.example.com/var/opt/gitlab/git-data/repositories/git/my_webservers_DEV.git"
+      scm_credential: "student-git" 
+      state: "present"
+      tower_config_file: "{{ tower_credential_file }}"
+    register: git_project_source
+
+  - name: Print Git Project Information
+    debug:
+      var: git_project_source
+
+
+
+
+  - name: Add admin role to Operations team via tower_role
+    tower_role:
+      project: "My Webservers DEV"
+      team: "Developers"
+      role: "admin"
+      state: "present"
+      tower_config_file: "{{ tower_credential_file }}"
+

@@ -1,0 +1,114 @@
+- name: Tower Team Users Role Playbook
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+  - vars_users.yml
+
+  tasks:
+  - name: Run Lab script
+    import_tasks: lab_script.yml
+
+  - name: Add tower inventory
+    tower_inventory:
+      name: "Prod"
+      description: "Production Inventory"
+      organization: "Default"
+      state: "present"
+      tower_host: "tower.lab.example.com"
+      tower_username: "admin"
+      tower_password: "redhat"
+      validate_certs: false
+
+  - name: Add Team via command Line
+    shell: >
+            tower-cli inventory create
+            --name "Prod" --organization "Default" 
+            --description "Production Inventory"
+            --tower-host "tower.lab.example.com" --tower-username "admin"
+            --tower-password "redhat" --insecure
+            
+
+  - name: Add tower group's
+    tower_group:
+      name: "prod-servers"
+      description: "Production servers"
+      inventory: "Prod"
+      state: "present"
+      tower_config_file: "{{ tower_credential_file }}"
+    register: inventory_groups_output
+
+####  Print Group information created earlier, as it will be
+####  used later
+ 
+  - name: Print group's information
+    debug:
+      var: inventory_groups_output
+   
+  - name: Add tower host with "admin" user rights
+    tower_host:
+      name: "servere.lab.example.com"
+      description: "Server E"
+      inventory: "Prod"
+      tower_host: "tower.lab.example.com"
+      tower_username: "admin"
+      tower_password: "redhat"
+      validate_certs: false
+      state: "present"
+    register: inventory_hosts_output1
+
+  - name: Print Hosts servere.lab.example.com
+    debug:
+      var: inventory_hosts_output1
+      
+  - name: Associate 'servere.lab.example.com' Host to Group 'prod-servers'
+    shell: > 
+            tower-cli host associate  
+            --host "{{ inventory_hosts_output1.id }}" 
+            --group "{{ inventory_groups_output.id }}" 
+            --tower-host "tower.lab.example.com" --tower-username "admin" 
+            --tower-password "redhat" --insecure
+
+
+
+
+  - name: Add admin role to Operations team via tower_role
+    tower_role:
+      inventory: "Prod"
+      team: "Operations"
+      role: "admin"
+      state: "present"
+      tower_host: "tower.lab.example.com"
+      tower_username: "admin"
+      tower_password: "redhat"
+      validate_certs: false
+
+  - name: Add tower host with "oliver" user rights
+    tower_host:
+      name: "serverf.lab.example.com"
+      description: "Server F"
+      inventory: "Prod"
+      tower_host: "tower.lab.example.com"
+      tower_username: "oliver"
+      tower_password: "redhat123"
+      validate_certs: false
+      state: "present"
+    register: inventory_hosts_output2
+
+  - name: Print Hosts serverf.lab.example.com
+    debug:
+      var: inventory_hosts_output2
+
+  - name: Associate 'serverf.lab.example.com' Host to Group 'prod-servers'
+    shell: > 
+            tower-cli host associate  
+            --host "{{ inventory_hosts_output2.id }}" 
+            --group "{{ inventory_groups_output.id }}" 
+            --tower-host "tower.lab.example.com" --tower-username "oliver" 
+            --tower-password "redhat123" --insecure
+
+  - name: Add users to appropriate team via tower_role
+    shell: > 
+            tower-cli role grant 
+            --team 'Developers' --inventory "Test" --type 'use'
+            --tower-host "tower.lab.example.com" --tower-username "admin" 
+            --tower-password "redhat" --insecure

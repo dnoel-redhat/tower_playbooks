@@ -1,0 +1,7 @@
+- asset_type: user
+  email: sylvia@lab.example.com
+  first_name: Sylvia
+  is_system_auditor: true
+  last_name: Simons
+  username: sylvia
+

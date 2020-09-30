@@ -1,0 +1,48 @@
+- name: Tower Users Playbook
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+  - vars_users.yml
+
+  tasks:
+  - name: Create user via tower_user module
+    tower_user: 
+      username: "simon"
+      password: "redhat123"
+      email: "simon@lab.example.com"
+      first_name: "Simon"
+      last_name: "Stephens"
+      state: present
+      superuser: true
+    
+  - name: Create user via tower_cli command
+    shell: > 
+            tower-cli user create 
+            --username "sam" --password "redhat123" 
+            --email "sam@lab.example.com" 
+            --first-name "Sam" --last-name "Simons" 
+            --tower-host "tower.lab.example.com" --tower-username "admin" 
+            --tower-password "redhat" --insecure
+
+
+
+  - name: Create User via asset file
+    tower_send:
+      assets: "{{ lookup('file','asset_user_sylvia.yml') }}"
+      tower_config_file: "./tower_cli.cfg"
+
+
+
+  #- name: Add tower users
+  #  tower_user:
+  #    username: "{{ item.username }}"
+  #    password: "{{ item.password }}"
+  #    email: "{{ item.email }}"
+  #    first_name: "{{ item.first_name }}"
+  #    last_name: "{{ item.last_name }}"
+  #    state: "{{ item.state  }}"
+  #    superuser: "{{ item.superuser }}"
+  #    auditor: "{{ item.auditor }}"
+  #    tower_config_file: "{{ tower_credential_file }}"
+  #  loop: "{{ users_info }}"
+

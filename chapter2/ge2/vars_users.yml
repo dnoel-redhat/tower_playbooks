@@ -1,0 +1,35 @@
+users_info:
+  - username: "daniel"
+    password: "redhat123"
+    email: "daniel@lab.example.com"
+    first_name: "Daniel"
+    last_name: "George"
+    state: present
+
+  - username: "donnie"
+    password: "redhat123"
+    email: "donnie@lab.example.com"
+    first_name: "Donnie"
+    last_name: "Jameson"
+    state: present
+
+  - username: "david"
+    password: "redhat123"
+    email: "david@lab.example.com"
+    first_name: "David"
+    last_name: "Jackobs"
+    state: present
+
+
+users_team_association_info:
+  - name: "daniel" 
+    team: "Developers"
+    role: "admin"
+    state: present
+
+  - name: "donnie"
+    team: "Developers"
+    role: "read"
+    state: present
+
+

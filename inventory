@@ -1,0 +1,11 @@
+localhost ansible_connection=local
+
+tower_server ansible_host=tower.lab.example.com
+
+[all:vars]
+ansible_python_interpreter=/usr/libexec/platform-python
+ansible_user=student
+ansible_password=student
+ansible_become_user=root
+ansible_become_pass=student
+tower_credential_file=./tower_cli.cfg

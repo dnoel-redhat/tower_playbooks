@@ -1,0 +1,21 @@
+- name: Run lab script
+  shell: lab host-inventory start
+  async: 1
+  poll: 0
+  #become: true
+  ignore_errors: true
+  register: lab_script_output
+
+- name: testing
+  debug:
+    var: lab_script_output
+
+- name: Wait for lab script to complete
+  async_status: "jid={{lab_script_output.ansible_job_id}}"
+  retries: 2000
+  register: check
+  until: check.finished
+
+- name: print check
+  debug:
+    var: check
