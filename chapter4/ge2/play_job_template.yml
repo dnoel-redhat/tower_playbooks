@@ -1,0 +1,114 @@
+- name: Tower Machine Credentials Role Playbook
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+  - vars_users.yml
+
+  tasks:
+  #- name: Run Lab script
+  #  import_tasks: lab_script.yml
+
+  - name: Add credential via command Line
+    shell: >
+            tower-cli job_template create
+            --name "DEV webservers setup" 
+            --credential "Developers" --job-type "run"
+            --description "Setup apache on DEV webservers" 
+            --inventory "Dev" --playbook "apache-setup.yml"
+            --become-enabled true  --project "My Webservers DEV"
+            --tower-host "tower.lab.example.com" --tower-username "admin"
+            --tower-password "redhat" --insecure
+            
+
+   
+
+
+  - name: Assign permissions (role) to Developers Team
+    shell: > 
+            tower-cli role grant 
+            --team 'Developers' --job-template "DEV webservers setup"  
+            --type 'admin'
+            --tower-host "tower.lab.example.com" --tower-username "admin" 
+            --tower-password "redhat" --insecure
+
+  - name: Create Job template via tower_job_template module
+    tower_job_template:
+      name: "DEV webservers setup"
+      description: "Setup apache on DEV webservers"
+      job_type: "run"
+      inventory: "Dev"
+      project: "My Webservers DEV"
+      playbook: "apache-setup.yml"
+      credential: "Developers"
+      become_enabled: "true"
+      state: "present"
+      #survey_enabled: ""
+      #survey_spec: ""
+      tower_config_file: "{{ tower_credential_file }}"
+    register: job_template_output
+  
+  - name: Print job_template_output
+    debug:
+      var: job_template_output
+
+  - name: Assign permissions (role) to "DEV webservers setup" template
+    tower_role:
+      job_template: "DEV webservers setup"
+      team: "Developers"
+      role: "admin"
+      state: "present"
+      tower_host: "tower.lab.example.com"
+      tower_username: "admin"
+      tower_password: "redhat"
+      validate_certs: false
+
+
+
+
+
+  - name: Launch Job #{{ job_template_info.name }}
+    tower_job_launch:
+      job_template: "DEV webservers setup"
+      tower_host: "tower.lab.example.com"
+      tower_username: "daniel"
+      tower_password: "redhat123"
+      validate_certs: false
+    register: job_output
+   
+  ####   Check Job ID and other information  
+   
+  - name: Print job status
+    debug:
+      var: job_output
+   
+  #### Wait and Monitor status of previous launched job
+   
+  - name: Wait for job max 120s
+    tower_job_wait:
+      job_id: "{{ job_output.id }}"
+      timeout: 120
+      tower_host: "tower.lab.example.com"
+      tower_username: "daniel"
+      tower_password: "redhat123"
+      validate_certs: false
+    register: check_status
+   
+  ####   Check Final Status of Job and Time taken to execute 
+   
+  - name: Job Status Information
+    debug:
+      msg: "Time Taken = {{ check_status.elapsed }}    Job ID = {{ check_status.id }}   Job Status = {{ check_status.status }}"
+  
+
+
+  - name: Create Job Template via asset file
+    tower_send:
+      assets: "{{ lookup('file','asset_template_DEV_ftpservers_setup.yml') }}"
+      tower_config_file: "./tower_cli.cfg"
+
+  - name: Run Job template via tower-cli
+    shell: >
+            tower-cli job launch 
+            --job-template "DEV ftpservers setup" --monitor 
+            --tower-host "tower.lab.example.com" --tower-username "daniel"  
+            --tower-password "redhat123" --insecure

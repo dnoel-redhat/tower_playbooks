@@ -1,0 +1,27 @@
+- asset_relation:
+    extra_credentials: []
+    labels: []
+    notification_templates_error: []
+    notification_templates_success: []
+    roles:
+    - name: Admin
+      team:
+      - Developers
+      user:
+      - admin
+    - name: Execute
+      team: []
+      user: []
+    - name: Read
+      team: []
+      user: []
+    schedules: []
+    survey_spec: {}
+  asset_type: job_template
+  credential: Developers
+  description: Setup FTP on DEV servers
+  inventory: Dev
+  name: DEV ftpservers setup
+  playbook: site.yml
+  project: My Webservers DEV
+
