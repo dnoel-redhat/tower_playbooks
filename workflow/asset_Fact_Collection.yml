@@ -1,0 +1,30 @@
+- asset_relation:
+    extra_credentials: []
+    labels: []
+    notification_templates_error: []
+    notification_templates_success: []
+    roles:
+    - name: Admin
+      team: []
+      user:
+      - admin
+    - name: Execute
+      team: []
+      user: []
+    - name: Read
+      team: []
+      user: []
+    schedules:
+    - description: every day until October 22, 2020
+      name: Collect Fact Job
+      rrule: DTSTART;TZID=Europe/London:20201002T013000 RRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20201021T230000Z
+    survey_spec: {}
+  asset_type: job_template
+  credential: daliann_creds
+  description: Collect the fact
+  inventory: Dynamic Inventory
+  name: Fact Collection
+  playbook: facts_collect.yml
+  project: jerry_project
+  use_fact_cache: true
+

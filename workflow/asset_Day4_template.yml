@@ -1,0 +1,31 @@
+- asset_relation:
+    extra_credentials: []
+    labels: []
+    notification_templates_error: []
+    notification_templates_success: []
+    roles:
+    - name: Admin
+      team: []
+      user:
+      - admin
+    - name: Execute
+      team: []
+      user: []
+    - name: Read
+      team: []
+      user: []
+    schedules: []
+    survey_spec: {}
+  asset_type: job_template
+  credential: daliann_creds
+  description: Day 4 Begin
+  forks: 2
+  inventory: catalin_inventory
+  job_tags: dev,untagged
+  name: Day4_template
+  playbook: tagged_demo.yml
+  project: jerry_project
+  skip_tags: prod
+  vault_credential: vault_creda
+  verbosity: 1
+

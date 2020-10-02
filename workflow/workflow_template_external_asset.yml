@@ -1,0 +1,50 @@
+####  I have put 2 ways here tower_job_template and asset jsonfile
+####  In this Task File, We are creating 5 Job Templates
+####
+####  1 (collect_facts) via tower_job_template
+####  4 via json Asset File 
+####  (second_template,Success_Template,failed_template,Always_Template)
+####  So these 5 templates will be used in workflow template
+####  
+ 
+
+
+####  Create First Template "collect_facts" with tower_job_template
+####  Observe "fact_caching_enabled: true" 
+####  Above paramter will "collect facts" from Managed hosts and
+####  store them in Cache memory, so that following job templates
+####  doesn't have to collect facts.
+####  This method improve perfformance
+
+#- name: Create Job template via tower_job_template module
+#  tower_job_template:
+#    name: "Collect_Facts"
+#    job_type: "run"
+#    description: "Collect Facts"
+#    inventory: "RedHat Inventory"
+#    project: "RedHat Project"
+#    playbook: "collect_facts.yml"
+#    credential: "Redhat_Creds"
+#    become_enabled: false
+#    fact_caching_enabled: true
+#    state: "present"
+#    tower_host: https://tower.lab.example.com
+#    tower_username: admin
+#    tower_password: redhat
+#    validate_certs: no
+
+#### Rest 4 templates via json Asset File
+#### In following templates "fact_caching_enabled" is disabled 
+#### Feel free to read asset_multiple_job_templates.json file
+
+
+- name: Import Multiple Job Templates Assets to use in workflow 
+  tower_send:
+    assets: "{{ lookup('file','{{ item }}') }}"
+    tower_config_file: "./tower_cli.cfg"
+  loop:
+  - workflow/asset_My_Webservers_DEV.yml
+  - workflow/asset_amaya_template.yml
+  - workflow/asset_Fact_Collection.yml
+  - workflow/asset_DEV_webservers_setup.yml
+  - workflow/asset_Day4_template.yml

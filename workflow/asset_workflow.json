@@ -1,0 +1,87 @@
+[
+  {
+    "asset_type": "workflow",
+    "name": "Workflow Test",
+    "description": "Wrkf Demo",
+    "organization": "British Airways",
+    "inventory": 2,
+    "asset_relation": {
+      "survey_spec": {},
+      "workflow_nodes": [
+        {
+          "name": "node0",
+          "unified_job_type": "project_update",
+          "unified_job_name": "My Webservers DEV",
+          "success_nodes": [
+            "node1"
+          ],
+          "failure_nodes": [],
+          "always_nodes": []
+        },
+        {
+          "name": "node1",
+          "unified_job_type": "job",
+          "unified_job_name": "amaya_template",
+          "success_nodes": [
+            "node3"
+          ],
+          "failure_nodes": [
+            "node2"
+          ],
+          "always_nodes": [
+            "node4"
+          ]
+        },
+        {
+          "name": "node2",
+          "unified_job_type": "job",
+          "unified_job_name": "Fact Collection",
+          "success_nodes": [],
+          "failure_nodes": [],
+          "always_nodes": []
+        },
+        {
+          "name": "node3",
+          "unified_job_type": "job",
+          "unified_job_name": "DEV webservers setup",
+          "success_nodes": [],
+          "failure_nodes": [],
+          "always_nodes": []
+        },
+        {
+          "name": "node4",
+          "unified_job_type": "job",
+          "unified_job_name": "Day4_template",
+          "success_nodes": [],
+          "failure_nodes": [],
+          "always_nodes": []
+        }
+      ],
+      "schedules": [
+        {
+          "name": "Run this in Night",
+          "description": "every day until October 5, 2020",
+          "rrule": "DTSTART;TZID=Europe/London:20201002T010000 RRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20201004T230000Z"
+        }
+      ],
+      "labels": [],
+      "roles": [
+        {
+          "name": "Admin",
+          "user": [],
+          "team": []
+        },
+        {
+          "name": "Execute",
+          "user": [],
+          "team": []
+        },
+        {
+          "name": "Read",
+          "user": [],
+          "team": []
+        }
+      ]
+    }
+  }
+]

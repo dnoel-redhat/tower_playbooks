@@ -1,0 +1,16 @@
+
+#### This Task will launch workflow template
+
+- name: Launch a workflow
+  tower_workflow_launch:
+    workflow_template: "Workflow Test"
+    tower_config_file: "./tower_cli.cfg"
+  run_once: true
+  register: workflow_results
+
+
+#### This Task will provide final job status
+
+- name: Print job status
+  debug:
+    msg: " Status = {{ workflow_results.job_info.status }}  Started Time = {{ workflow_results.job_info.started }}   Finished Time = {{ workflow_results.job_info.finished }}      Time Taken = {{ workflow_results.job_info.elapsed }} Seconds"

@@ -1,0 +1,24 @@
+
+####  This playbook will do following things 
+####  
+####  1. Create and import(asset json file) multiple job templates
+####  2. Create Workflow Template
+####  3. Setup permission on Workflow Template to run as Normal User
+####  4. Launch Workflow Template as "Normal User" and observe status 
+####  
+ 
+
+
+- name: Tower Playbook
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: Create Job Template via external asset file
+    import_tasks: workflow/workflow_template_external_asset.yml
+
+  - name: Create Workflow Template
+    import_tasks: workflow/workflow_template_create.yml
+ 
+  - name: Launch Job and view status of job
+    import_tasks: workflow/workflow_template_launch_job_status.yml
+

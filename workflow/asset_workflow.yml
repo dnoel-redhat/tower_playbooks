@@ -1,0 +1,58 @@
+- asset_relation:
+    labels: []
+    roles:
+    - name: Admin
+      team: []
+      user: []
+    - name: Execute
+      team: []
+      user: []
+    - name: Read
+      team: []
+      user: []
+    schedules:
+    - description: every day until October 5, 2020
+      name: Run this in Night
+      rrule: DTSTART;TZID=Europe/London:20201002T010000 RRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20201004T230000Z
+    survey_spec: {}
+    workflow_nodes:
+    - always_nodes: []
+      failure_nodes: []
+      name: node0
+      success_nodes:
+      - node1
+      unified_job_name: My Webservers DEV
+      unified_job_type: project_update
+    - always_nodes:
+      - node4
+      failure_nodes:
+      - node2
+      name: node1
+      success_nodes:
+      - node3
+      unified_job_name: amaya_template
+      unified_job_type: job
+    - always_nodes: []
+      failure_nodes: []
+      name: node2
+      success_nodes: []
+      unified_job_name: Fact Collection
+      unified_job_type: job
+    - always_nodes: []
+      failure_nodes: []
+      name: node3
+      success_nodes: []
+      unified_job_name: DEV webservers setup
+      unified_job_type: job
+    - always_nodes: []
+      failure_nodes: []
+      name: node4
+      success_nodes: []
+      unified_job_name: Day4_template
+      unified_job_type: job
+  asset_type: workflow
+  description: Wrkf Demo
+  inventory: 2
+  name: Workflow Test
+  organization: British Airways
+

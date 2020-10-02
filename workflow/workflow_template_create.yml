@@ -1,0 +1,41 @@
+
+####  This task file will create workflow template in tower  
+
+
+####  This task will find inventory id from tower
+####  Reason to find inventory id, inventory name is not 
+####  supported/accepted via asset file
+
+- name: Find Inventory ID
+  shell: tower-cli inventory get --name "catalin_inventory" | sed -e '1,3d'| sed -e '2d'| awk '/^ [0-9]/ {print $1}'
+  register: inventory_out
+
+
+#### Print Inventory ID Created in  previous task
+
+- name: Print Inventory ID from tower
+  debug:
+    msg: "{{inventory_out.stdout | int}}"
+
+
+####  This task will update "asset_workflow.json" file
+####  with ID of inventory
+
+- name: Update asset file with inventory ID
+  lineinfile:
+    path: "workflow/asset_workflow.yml"
+    regexp: '^  inventory:'
+    line: "  inventory: {{inventory_out.stdout | int}}"
+
+
+
+####  This task will create workflow template from
+####  json asset file with updated Inventory ID.
+####  You can also use "tower_workflow_template module" for
+####  this purpose but still need json file as we need
+####  node(job template) to node(job template) connection
+
+- name: Create workflow template from asset file
+  tower_send:
+    assets: "{{ lookup('file','workflow/asset_workflow.yml') }}"
+    tower_config_file: "./tower_cli.cfg"
